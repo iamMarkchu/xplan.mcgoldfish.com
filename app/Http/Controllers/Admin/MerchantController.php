@@ -87,9 +87,9 @@ class MerchantController extends Controller
     /**
      * Fill Data From request to Merchant
      *
-     * @param Merchant $merchant
-     * @param Request $request
-     * @return Merchant
+     * @param \App\Models\Merchant $merchant
+     * @param \Illuminate\Http\Request $request
+     * @return \App\Models\Merchant $merchant
      */
     public function fillFromRequest(Merchant $merchant, Request $request)
     {

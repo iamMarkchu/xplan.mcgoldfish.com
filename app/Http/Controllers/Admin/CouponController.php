@@ -42,11 +42,7 @@ class CouponController extends Controller
      */
     public function store(CouponRequest $request, Coupon $coupon)
     {
-        $data = array_merge($request->except(['merchant_name']), ['editor' => Auth::user()->name]);        
-        $coupon->fill($data);
-        $coupon->promo_code = empty($coupon->promo_code) ? '': $coupon->promo_code;
-        $coupon->remark = empty($coupon->remark) ? '': $coupon->remark;
-        $coupon->restrict = empty($coupon->restrict) ? '': $coupon->restrict;
+        $coupon = $this->fillFromRequest($coupon, $request);
         $coupon->save();
         return response()->api('create coupon success');
     }
@@ -59,7 +55,8 @@ class CouponController extends Controller
      */
     public function show(Coupon $coupon)
     {
-        $coupon->merchant = $coupon->merchant;
+        $merchant = $coupon->merchant;
+        $coupon->merchant = $merchant;
         return response()->api($coupon);
     }
 
@@ -83,6 +80,24 @@ class CouponController extends Controller
      */
     public function update(CouponRequest $request, Coupon $coupon)
     {
+        $coupon = $this->fillFromRequest($coupon, $request);
+        $coupon->save();
+        return response()->api('update coupon success');
+    }
+
+    /**
+     * Fill Data From request to Merchant
+     *
+     * @param \App\Models\Coupon $coupon
+     * @param \Illuminate\Http\Request $request
+     * @return \App\Models\Coupon $coupon
+     */
+    public function fillFromRequest(Coupon $coupon, Request $request)
+    {
+        if($request->isMethod('post'))
+        {
+            $coupon->merchant_id = $request->merchant_id;
+        }
         $coupon->title = $request->title;
         $coupon->promo_type = $request->promo_type;
         $coupon->promo_code = empty($request->promo_code) ? '': $request->promo_code;
@@ -92,8 +107,7 @@ class CouponController extends Controller
         $coupon->dst_url = $request->dst_url;
         $coupon->restrict = empty($request->restrict) ? '': $request->restrict;
         $coupon->editor = Auth::user()->name;
-        $coupon->save();
-        return response()->api('update coupon success');
+        return $coupon;
     }
 
     /**
